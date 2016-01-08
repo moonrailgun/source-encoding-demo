@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" type="text/css" href="./css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="./css/bootstrap-slider.min.css">
+    <script src="./js/lib/jquery-2.1.4.js"></script>
+    <script src="./js/lib/bootstrap.js"></script>
+    <script src="./js/lib/bootstrap-slider.min.js"></script>
+    <title>source encoding demo</title>
+    <style>
+        #input-slider-container div.form-group{
+            margin-bottom: 36px;
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row text-center">
+        <h1>信源编码示例</h1>
+
+        <h3>source encoding demo</h3>
+    </div>
+    <div class="row">
+        <div class="col-sm-8 col-sm-offset-2">
+            <div class="panel panel-default">
+                <div class="panel-heading">输入信源</div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <p class="help-block">调整信源各分量输入概率</p>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <input type="button" id="destroySlider" class="btn btn-danger btn-block" value="手动输入分量">
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <input type="button" id="addSlider" class="btn btn-default btn-block" value="添加信源参数">
+                            </div>
+                        </div>
+                        <p></p>
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="row">
+                            <form class="clearfix">
+                                <div id="input-slider-container" class="form-group">
+                                    <div class="form-group">
+                                        <input class="form-control source-input-slider" data-slider-min="0"
+                                               data-slider-max="1" data-slider-step="0.01" data-slider-value="0"
+                                               type="text">
+                                    </div>
+                                    <div class="form-group">
+                                        <input class="form-control source-input-slider" data-slider-min="0"
+                                               data-slider-max="1" data-slider-step="0.01" data-slider-value="0"
+                                               type="text">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-4 col-sm-offset-2">
+            <div class="panel panel-default">
+                <div class="panel-heading">输入参数</div>
+                <div class="panel-body">
+                    <div id="input-params">
+                        0,0
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4 col-sm-offset-0">
+            <div class="panel panel-default">
+                <div class="panel-heading">应用参数</div>
+                <div class="panel-body">
+                    <div id="apply-params">
+                        0,0
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    var isDestroy = false;
+    var currentInputParam = [];
+    var updateSlider = function () {
+        if (!isDestroy) {
+            var sliders = $('.source-input-slider');
+            sliders.slider({});
+            sliders.on("slide", function (slideEvt) {
+                updateSliderValue();
+            });
+        }
+    };
+
+    var updateSliderValue = function(){
+        var sliders = $('.source-input-slider');
+        var vals = [];
+        for(var i = 0; i < sliders.length; i++){
+            vals.push(sliders[i].value);
+        }
+        currentInputParam = vals;
+        $('#input-params').text(vals);
+    };
+
+    var updateApplyParam = function(){
+        var applyParam = [];
+
+    };
+
+    (function () {
+        updateSlider();
+        $('#destroySlider').click(function () {
+            $('.source-input-slider').slider('destroy');
+            isDestroy = true;
+            console.log('have been destory');
+        });
+        $('#addSlider').click(function () {
+            var html = '<div class="form-group"><input class="form-control source-input-slider" data-slider-min="0" data-slider-max="1" data-slider-step="0.01" data-slider-value="0" type="text"></div>';
+            var container = $('#input-slider-container');
+            container.append(html);
+            updateSlider();
+        });
+    })();
+</script>
+</html>
