@@ -9,9 +9,10 @@
     <script src="./js/lib/bootstrap.js"></script>
     <script src="./js/lib/bootstrap-slider.min.js"></script>
     <script src="./js/common.js"></script>
+    <script src="./js/shannon.js"></script>
     <title>source encoding demo</title>
     <style>
-        #input-slider-container div.form-group{
+        #input-slider-container div.form-group {
             margin-bottom: 36px;
         }
     </style>
@@ -105,27 +106,35 @@
         }
     };
 
-    var updateSliderValue = function(){
+    var updateSliderValue = function () {
         var sliders = $('.source-input-slider');
         var vals = [];
-        for(var i = 0; i < sliders.length; i++){
-            vals.push(sliders[i].value);
+        for (var i = 0; i < sliders.length; i++) {
+            var val = Number(sliders[i].value);
+            if (isNaN(val)) {
+                alert('请输入数字');
+            } else {
+                vals.push(val.toFixed(2));
+            }
         }
         currentInputParam = vals;
         $('#input-params').text(vals);
         updateApplyParam();
     };
 
-    var updateApplyParam = function(){
+    var updateApplyParam = function () {
         var applyParam = [];
 
-        for(var i = 0;i<currentInputParam.length;i++){
+        for (var i = 0; i < currentInputParam.length; i++) {
             applyParam[i] = currentInputParam[i];
         }
         Common.sort(applyParam);//排序
         Common.clearRedundantZero(applyParam);//清除0
 
         $('#apply-params').text(applyParam);
+
+        var sn = new Shannon(applyParam);
+        sn.Analyze();
     };
 
     (function () {
