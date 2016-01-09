@@ -30,19 +30,30 @@
                 <div class="panel-heading">输入信源</div>
                 <div class="panel-body">
                     <div class="row">
-                        <div class="col-sm-6">
+                        <div class="col-sm-5 col-xs-7">
                             <div class="form-group">
                                 <p class="help-block">调整信源各分量输入概率</p>
                             </div>
                         </div>
-                        <div class="col-sm-3">
+                        <div class="col-xs-1">
                             <div class="form-group">
-                                <input type="button" id="destroySlider" class="btn btn-danger btn-block" value="手动输入分量">
+                                <button type="button" id="updateSlider" class="btn btn-warning">
+                                    <span class="glyphicon glyphicon-refresh"></span>
+                                </button>
                             </div>
                         </div>
                         <div class="col-sm-3">
                             <div class="form-group">
-                                <input type="button" id="addSlider" class="btn btn-default btn-block" value="添加信源参数">
+                                <button type="button" id="destroySlider" class="btn btn-danger btn-block">
+                                    <span class="glyphicon glyphicon-edit"></span>手动输入分量
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <button type="button" id="addSlider" class="btn btn-default btn-block">
+                                    <span class="glyphicon glyphicon-plus"></span>添加信源参数
+                                </button>
                             </div>
                         </div>
                         <p></p>
@@ -149,6 +160,9 @@
             var container = $('#input-slider-container');
             container.append(html);
             updateSlider();
+        });
+        $('#updateSlider').click(function(){
+            updateSliderValue();
         });
     })();
 </script>
