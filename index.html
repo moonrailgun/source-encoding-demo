@@ -10,6 +10,7 @@
     <script src="./js/lib/bootstrap-slider.min.js"></script>
     <script src="./js/common.js"></script>
     <script src="./js/shannon.js"></script>
+    <script src="./js/feno.js"></script>
     <title>source encoding demo</title>
     <style>
         #input-slider-container div.form-group {
@@ -168,7 +169,8 @@
 
         $('#apply-params').text(applyParam);
 
-        updateShannon(applyParam)
+        updateShannon(applyParam);
+        updateFeno(applyParam);
     };
 
     var updateShannon = function(applyParam){
@@ -176,15 +178,36 @@
         var list = sn.Analyze();
 
         var field = '<tr><td>信源符号</td>';
+        var probability  = '<tr><td>概率</td>';
         var data = '<tr><td>码字</td>';
         for(var i = 0;i<list.length;i++){
             field += '<td>'+list[i].sign+'</td>';
+            probability += '<td>'+list[i].p +'</td>';
             data += '<td>'+list[i].code+'</td>';
         }
         field += '</tr>';
+        probability += '</tr>';
         data += '</tr>';
 
-        $('#shannonTable').html(field + data);
+        $('#shannonTable').html(field+probability + data);
+    };
+    var updateFeno = function(applyParam){
+        var fn = new Feno(applyParam);
+        var list = fn.Analyze();
+
+        var field = '<tr><td>信源符号</td>';
+        var probability  = '<tr><td>概率</td>';
+        var data = '<tr><td>码字</td>';
+        for(var i = 0;i<list.length;i++){
+            field += '<td>'+list[i].sign+'</td>';
+            probability += '<td>'+list[i].p +'</td>';
+            data += '<td>'+list[i].code+'</td>';
+        }
+        field += '</tr>';
+        probability += '</tr>';
+        data += '</tr>';
+
+        $('#fenoTable').html(field+probability + data);
     };
 
     (function () {

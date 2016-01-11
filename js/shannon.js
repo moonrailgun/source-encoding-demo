@@ -2,10 +2,11 @@
  * Created by Chen on 2016-01-08.
  */
 
+//香农编码
 var Shannon = function (_source) {
+    var P = [];
     var Pa = [];
     var Ki = [];
-    var P = [];
     var Code = [];
 
     this.Analyze = function () {
@@ -58,7 +59,7 @@ var Shannon = function (_source) {
         for(var i = 1;i<Pa.length;i++){
             tmp.push({
                 sign: 'a'+i,
-                Pa:Pa[i],
+                p:P[i],
                 code: Code[i]
             });
         }

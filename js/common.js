@@ -3,9 +3,11 @@
  */
 
 var COMMON = function () {
+    //去除输入的
     this.clearRedundantZero = function (A) {
         if (A[A.length - 1] == 0) {
             A.slice(A.length - 1, 1);
+            this.clearRedundantZero(A);
         }
     };
     this.sort = function (A) {
