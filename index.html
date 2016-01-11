@@ -8,6 +8,7 @@
     <script src="./js/lib/jquery-2.1.4.js"></script>
     <script src="./js/lib/bootstrap.js"></script>
     <script src="./js/lib/bootstrap-slider.min.js"></script>
+    <script src="./js/lib/Chart.min.js"></script>
     <script src="./js/common.js"></script>
     <script src="./js/shannon.js"></script>
     <script src="./js/feno.js"></script>
@@ -118,10 +119,37 @@
                         <table id="fenoTable" class="table">
                         </table>
                     </div>
-                    <div class="row">
-                        <h3>赫夫曼编码</h3>
-                        <table id="huffmanTable" class="table">
-                        </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-4 col-sm-offset-2">
+            <div class="panel panel-default">
+                <div class="panel-heading">编码效率比对</div>
+                <div class="panel-body">
+                    <h3>输入信息熵</h3>
+
+                    <p id="inputEntropy"></p>
+
+                    <h3>香农编码</h3>
+
+                    <p id="shannonCodingEfficiency">编码效率:<span></span></p>
+                    <canvas id="shannonPie"></canvas>
+
+                    <h3>费诺编码</h3>
+
+                    <p id="fenoCodingEfficiency">编码效率:<span></span></p>
+                    <canvas id="fenoPie"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4 col-sm-offset-0">
+            <div class="panel panel-default">
+                <div class="panel-heading">历次编码比较</div>
+                <div class="panel-body">
+                    <div id="historyCompareContainer">
+                        <canvas id="historyCompare"></canvas>
                     </div>
                 </div>
             </div>
@@ -132,13 +160,13 @@
 <script>
     var isDestroy = false;
     var currentInputParam = [];
+    var compare = {};
+    var historyCompare = [];
+
     var updateSlider = function () {
         if (!isDestroy) {
             var sliders = $('.source-input-slider');
             sliders.slider({});
-            sliders.on("slide", function (slideEvt) {
-                updateSliderValue();
-            });
         }
     };
 
@@ -166,48 +194,138 @@
         }
         Common.sort(applyParam);//排序
         Common.clearRedundantZero(applyParam);//清除0
+        compare.entropy = Common.computeEntropy(applyParam);//计算信息熵
 
         $('#apply-params').text(applyParam);
 
         updateShannon(applyParam);
         updateFeno(applyParam);
+        updateCompare();
     };
 
-    var updateShannon = function(applyParam){
+    var updateShannon = function (applyParam) {
         var sn = new Shannon(applyParam);
         var list = sn.Analyze();
+        compare.shannonAverageCodeLength = sn.getAverageCodeLength();
+        compare.shannonCodingEfficiency = sn.getCodingEfficiency();
 
         var field = '<tr><td>信源符号</td>';
-        var probability  = '<tr><td>概率</td>';
+        var probability = '<tr><td>概率</td>';
         var data = '<tr><td>码字</td>';
-        for(var i = 0;i<list.length;i++){
-            field += '<td>'+list[i].sign+'</td>';
-            probability += '<td>'+list[i].p +'</td>';
-            data += '<td>'+list[i].code+'</td>';
+        for (var i = 0; i < list.length; i++) {
+            field += '<td>' + list[i].sign + '</td>';
+            probability += '<td>' + list[i].p + '</td>';
+            data += '<td>' + list[i].code + '</td>';
         }
         field += '</tr>';
         probability += '</tr>';
         data += '</tr>';
 
-        $('#shannonTable').html(field+probability + data);
+        $('#shannonTable').html(field + probability + data);
     };
-    var updateFeno = function(applyParam){
+    var updateFeno = function (applyParam) {
         var fn = new Feno(applyParam);
         var list = fn.Analyze();
+        compare.fenoAverageCodeLength = fn.getAverageCodeLength();
+        compare.fenoCodingEfficiency = fn.getCodingEfficiency();
 
         var field = '<tr><td>信源符号</td>';
-        var probability  = '<tr><td>概率</td>';
+        var probability = '<tr><td>概率</td>';
         var data = '<tr><td>码字</td>';
-        for(var i = 0;i<list.length;i++){
-            field += '<td>'+list[i].sign+'</td>';
-            probability += '<td>'+list[i].p +'</td>';
-            data += '<td>'+list[i].code+'</td>';
+        for (var i = 0; i < list.length; i++) {
+            field += '<td>' + list[i].sign + '</td>';
+            probability += '<td>' + list[i].p + '</td>';
+            data += '<td>' + list[i].code + '</td>';
         }
         field += '</tr>';
         probability += '</tr>';
         data += '</tr>';
 
-        $('#fenoTable').html(field+probability + data);
+        $('#fenoTable').html(field + probability + data);
+    };
+    var updateCompare = function () {
+        var shannonPieData = [
+            {
+                value: 100 - (compare.shannonCodingEfficiency * 100).toFixed(2),
+                color: '#F7464A',
+                highlight: "#FF5A5E"
+            },
+            {
+                value: (compare.shannonCodingEfficiency * 100).toFixed(2),
+                color: "#FDB45C",
+                highlight: "#FFC870"
+            }
+        ];
+        $('#shannonPie').remove();
+        $('#shannonCodingEfficiency').after('<canvas id="shannonPie"></canvas>');
+        var shannonPie = new Chart($('#shannonPie').get(0).getContext("2d")).Pie(shannonPieData, {});
+
+        var fenoPieData = [
+            {
+                value: 100 - (compare.fenoCodingEfficiency * 100).toFixed(2),
+                color: '#F7464A',
+                highlight: "#FF5A5E"
+            },
+            {
+                value: (compare.fenoCodingEfficiency * 100).toFixed(2),
+                color: "#FDB45C",
+                highlight: "#FFC870"
+            }
+        ];
+        $('#fenoPie').remove();
+        $('#fenoCodingEfficiency').after('<canvas id="fenoPie"></canvas>');
+        var fenoPie = new Chart($('#fenoPie').get(0).getContext("2d")).Pie(fenoPieData, {});
+
+        $('#inputEntropy').text(compare.entropy);
+        $('#shannonCodingEfficiency span').text((compare.shannonCodingEfficiency * 100).toFixed(2) + '%');
+        $('#fenoCodingEfficiency span').text((compare.fenoCodingEfficiency * 100).toFixed(2) + '%')
+
+
+        historyCompare.push({
+            shannonCodingEfficiency: compare.shannonCodingEfficiency,
+            fenoCodingEfficiency: compare.fenoCodingEfficiency
+        });
+        updateHistoryCompare();
+    };
+
+    var updateHistoryCompare = function () {
+        var labels = [], shannonData = [], fenoData = [];
+        for (var i = 0; i < historyCompare.length; i++) {
+            labels.push('第' + (i + 1) + '次');
+            shannonData.push(historyCompare[i].shannonCodingEfficiency);
+            fenoData.push(historyCompare[i].fenoCodingEfficiency);
+        }
+        console.log(historyCompare);
+        var lineData = {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'shannon',
+                    fillColor: "rgba(220,220,220,0.2)",
+                    strokeColor: "rgba(220,220,220,1)",
+                    pointColor: "rgba(220,220,220,1)",
+                    pointStrokeColor: "#fff",
+                    pointHighlightFill: "#fff",
+                    pointHighlightStroke: "rgba(220,220,220,1)",
+                    data: shannonData
+                },
+                {
+                    label: "feno",
+                    fillColor: "rgba(151,187,205,0.2)",
+                    strokeColor: "rgba(151,187,205,1)",
+                    pointColor: "rgba(151,187,205,1)",
+                    pointStrokeColor: "#fff",
+                    pointHighlightFill: "#fff",
+                    pointHighlightStroke: "rgba(151,187,205,1)",
+                    data: fenoData
+                }
+            ]
+        };
+        $('#historyCompare').remove();
+        $('#historyCompareContainer').append('<canvas id="historyCompare"></canvas>');
+
+        var context = $('#historyCompare').get(0).getContext("2d");
+        var line = new Chart(context).Line(lineData);
     };
 
     (function () {
@@ -223,7 +341,7 @@
             container.append(html);
             updateSlider();
         });
-        $('#updateSlider').click(function(){
+        $('#updateSlider').click(function () {
             updateSliderValue();
         });
     })();

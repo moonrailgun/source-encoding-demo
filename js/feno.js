@@ -45,5 +45,19 @@ var Feno = function (_source) {
             });
         }
         return tmp;
+    };
+
+    //获取平均码长
+    this.getAverageCodeLength = function(){
+        var codeLength = 0;
+        for(var i = 0;i< P.length;i++){
+            codeLength += P[i] * Code[i].length
+        }
+        return codeLength;
+    };
+
+    this.getCodingEfficiency = function(){
+        var h = Common.computeEntropy(P);
+        return Number(h / this.getAverageCodeLength()).toFixed(4);
     }
 };

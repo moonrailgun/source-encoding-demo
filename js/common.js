@@ -30,6 +30,15 @@ var COMMON = function () {
         }
 
         return str;
+    };
+
+    this.computeEntropy = function (source) {
+        var tmp = 0;
+        for(var i = 0;i<source.length;i++){
+            var pa = Number(source[i]);
+            tmp += - (pa * Math.log(pa) / Math.log(2));
+        }
+        return tmp;
     }
 };
 

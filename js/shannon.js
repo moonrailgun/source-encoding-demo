@@ -41,6 +41,7 @@ var Shannon = function (_source) {
         return this.getList();
     };
 
+    //获取平均码长
     this.getAverageCodeLength = function () {
         var codeLength = 0;
         for (var i = 1; i < Ki.length; i++) {
@@ -64,6 +65,11 @@ var Shannon = function (_source) {
             });
         }
         return tmp;
+    };
+
+    this.getCodingEfficiency = function () {
+        var h = Common.computeEntropy(_source);
+        return Number(h / this.getAverageCodeLength()).toFixed(4);
     };
 
     (function () {
