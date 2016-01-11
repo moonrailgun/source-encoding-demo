@@ -6,7 +6,7 @@ var COMMON = function () {
     //去除输入的
     this.clearRedundantZero = function (A) {
         if (A[A.length - 1] == 0) {
-            A.slice(A.length - 1, 1);
+            A.splice(A.length - 1, 1);
             this.clearRedundantZero(A);
         }
     };
@@ -30,6 +30,16 @@ var COMMON = function () {
         }
 
         return str;
+    };
+
+    this.isValidly = function(A){
+        var sum = 0;
+        for(var i=0;i< A.length;i++){
+            sum += Number(A[i]);
+        }
+
+        console.log(sum);
+        return sum === 1;
     };
 
     this.computeEntropy = function (source) {

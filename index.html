@@ -39,15 +39,15 @@
                         </div>
                         <div class="col-xs-1">
                             <div class="form-group">
-                                <button type="button" id="updateSlider" class="btn btn-warning">
-                                    <span class="glyphicon glyphicon-refresh"></span>
+                                <button type="button" id="generateRandomSlider" class="btn btn-primary">
+                                    <span class="glyphicon glyphicon-repeat" title="生成随机消息序列"></span>
                                 </button>
                             </div>
                         </div>
                         <div class="col-sm-3">
                             <div class="form-group">
-                                <button type="button" id="destroySlider" class="btn btn-danger btn-block">
-                                    <span class="glyphicon glyphicon-edit"></span>手动输入分量
+                                <button type="button" id="updateSlider" class="btn btn-danger btn-block">
+                                    <span class="glyphicon glyphicon-refresh" title="开始编码"></span>开始编码
                                 </button>
                             </div>
                         </div>
@@ -65,14 +65,10 @@
                             <form class="clearfix">
                                 <div id="input-slider-container" class="form-group">
                                     <div class="form-group">
-                                        <input class="form-control source-input-slider" data-slider-min="0"
-                                               data-slider-max="1" data-slider-step="0.01" data-slider-value="0"
-                                               type="text">
+                                        <input class="form-control source-input-slider" type="text" value="0">
                                     </div>
                                     <div class="form-group">
-                                        <input class="form-control source-input-slider" data-slider-min="0"
-                                               data-slider-max="1" data-slider-step="0.01" data-slider-value="0"
-                                               type="text">
+                                        <input class="form-control source-input-slider" type="text" value="0">
                                     </div>
                                 </div>
                             </form>
@@ -158,17 +154,9 @@
 </div>
 </body>
 <script>
-    var isDestroy = false;
     var currentInputParam = [];
     var compare = {};
     var historyCompare = [];
-
-    var updateSlider = function () {
-        if (!isDestroy) {
-            var sliders = $('.source-input-slider');
-            sliders.slider({});
-        }
-    };
 
     var updateSliderValue = function () {
         var sliders = $('.source-input-slider');
@@ -194,13 +182,17 @@
         }
         Common.sort(applyParam);//排序
         Common.clearRedundantZero(applyParam);//清除0
-        compare.entropy = Common.computeEntropy(applyParam);//计算信息熵
+        if(Common.isValidly(applyParam)){
+            compare.entropy = Common.computeEntropy(applyParam);//计算信息熵
 
-        $('#apply-params').text(applyParam);
+            $('#apply-params').text(applyParam);
 
-        updateShannon(applyParam);
-        updateFeno(applyParam);
-        updateCompare();
+            updateShannon(applyParam);
+            updateFeno(applyParam);
+            updateCompare();
+        }else{
+            alert('输入不合法。请输入概率和为1的输入信源');
+        }
     };
 
     var updateShannon = function (applyParam) {
@@ -295,7 +287,6 @@
             shannonData.push(historyCompare[i].shannonCodingEfficiency);
             fenoData.push(historyCompare[i].fenoCodingEfficiency);
         }
-        console.log(historyCompare);
         var lineData = {
             labels: labels,
             datasets: [
@@ -328,21 +319,40 @@
         var line = new Chart(context).Line(lineData);
     };
 
+    var generateRandomValue = function () {
+        var sliders = $('.source-input-slider');
+        var num = sliders.length;
+        var max = 1;
+        for(var i=0;i<num;i++){
+            var value = 0;
+            if(max == 0 || i == num - 1){
+                value = max.toFixed(2);
+            }else{
+                value = (Math.random() * max).toFixed(2);
+                max -= value;
+                if(max < 0){
+                    max = 0;
+                }
+            }
+            $(sliders[i]).val(value);
+        }
+        console.log('生成完毕');
+
+        updateSliderValue();
+    };
+
     (function () {
-        updateSlider();
-        $('#destroySlider').click(function () {
-            $('.source-input-slider').slider('destroy');
-            isDestroy = true;
-            console.log('have been destory');
-        });
         $('#addSlider').click(function () {
-            var html = '<div class="form-group"><input class="form-control source-input-slider" data-slider-min="0" data-slider-max="1" data-slider-step="0.01" data-slider-value="0" type="text"></div>';
+            var html = '<div class="form-group"><input class="form-control source-input-slider" type="text" value="0"></div>';
             var container = $('#input-slider-container');
             container.append(html);
             updateSlider();
         });
         $('#updateSlider').click(function () {
             updateSliderValue();
+        });
+        $('#generateRandomSlider').click(function(){
+            generateRandomValue();
         });
     })();
 </script>
