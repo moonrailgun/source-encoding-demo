@@ -13,6 +13,22 @@ var COMMON = function () {
             return a < b ? 1 : -1;
         });
     };
+
+    this.toCodeString = function(num,codeLength){
+        var length = codeLength || 0;
+        var str = num.toString();
+        if(str.length < length){
+            //补零
+            var tmp = '';
+            for(var i = 0;i< length - str.length;i++){
+                tmp += '0';
+            }
+
+            str = tmp + str;
+        }
+
+        return str;
+    }
 };
 
 var Common = new COMMON();

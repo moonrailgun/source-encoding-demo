@@ -32,10 +32,12 @@ var Shannon = function (_source) {
 
         //step 4
         for (i = 1; i < Pa.length; i++) {
-            Code[i] = parseInt(Number(Number((Pa[i]).toString(2))) * Math.pow(10, Ki[i]));
+            var codeLength = Ki[i];
+            var codeNum = parseInt(Number(Number((Pa[i]).toString(2))) * Math.pow(10, codeLength));
+            Code[i] = Common.toCodeString(codeNum, codeLength);
         }
 
-        console.log(Code);
+        return this.getList();
     };
 
     this.getAverageCodeLength = function () {
@@ -45,6 +47,22 @@ var Shannon = function (_source) {
         }
 
         return codeLength;
+    };
+
+    this.getCode = function(){
+        return Code;
+    };
+
+    this.getList = function(){
+        var tmp = [];
+        for(var i = 1;i<Pa.length;i++){
+            tmp.push({
+                sign: 'a'+i,
+                Pa:Pa[i],
+                code: Code[i]
+            });
+        }
+        return tmp;
     };
 
     (function () {

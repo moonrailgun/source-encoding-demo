@@ -102,6 +102,30 @@
             </div>
         </div>
     </div>
+    <div class="row">
+        <div class="col-sm-8 col-sm-offset-2">
+            <div class="panel panel-default">
+                <div class="panel-heading">编码结果</div>
+                <div class="panel-body">
+                    <div class="row">
+                        <h3>香农编码</h3>
+                        <table id="shannonTable" class="table">
+                        </table>
+                    </div>
+                    <div class="row">
+                        <h3>费诺编码</h3>
+                        <table id="fenoTable" class="table">
+                        </table>
+                    </div>
+                    <div class="row">
+                        <h3>赫夫曼编码</h3>
+                        <table id="huffmanTable" class="table">
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 </body>
 <script>
@@ -144,8 +168,23 @@
 
         $('#apply-params').text(applyParam);
 
+        updateShannon(applyParam)
+    };
+
+    var updateShannon = function(applyParam){
         var sn = new Shannon(applyParam);
-        sn.Analyze();
+        var list = sn.Analyze();
+
+        var field = '<tr><td>信源符号</td>';
+        var data = '<tr><td>码字</td>';
+        for(var i = 0;i<list.length;i++){
+            field += '<td>'+list[i].sign+'</td>';
+            data += '<td>'+list[i].code+'</td>';
+        }
+        field += '</tr>';
+        data += '</tr>';
+
+        $('#shannonTable').html(field + data);
     };
 
     (function () {
