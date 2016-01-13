@@ -6,57 +6,89 @@
 var Feno = function (_source) {
     var P = _source || [];
     var Code = [];
-    var loopNum = 0;
 
-    var loop = function (code, p, index) {
-        loopNum++;
-
-        var tmp = '';
-        for(var i = 0;i<loopNum;i++){
-            tmp += '1';
+    //获取中心索引
+    var getCenterIndex = function (array) {
+        if (array.length < 2) {
+            return 0;
         }
-        code[index] = tmp + '0';
 
-        if (p.length - code.length >= 2) {
-            loop(code, p, index+1);
-        }else{
-            code[index+1] =tmp + '1';
+        var num = 0;
+        var prevNum = 0;
+        var sum = 0;
+        for (var i = 0; i < array.length; i++) {
+            sum += Number(array[i]);
+        }
+
+        prevNum = sum;
+        for (i = 0; i < array.length; i++) {
+            num += Number(array[i]);
+            if (Math.abs(num - sum / 2) > Math.abs(prevNum - sum / 2)) {
+                return i;
+            }
+            prevNum = num;
+        }
+    };
+
+    //获取子数组
+    var getChildArray = function (parentArray, startIndex, endIndex) {
+        var childArray = [];
+        for (var i = startIndex; i <= endIndex; i++) {
+            childArray.push(parentArray[i]);
+        }
+
+        return childArray;
+    };
+
+    var loop = function (code, p, startIndex, endIndex) {
+        var operatedArray = getChildArray(p, startIndex, endIndex);
+        var centerIndex = getCenterIndex(operatedArray);
+        if (centerIndex != 0) {
+            //可分
+            var realCenterIndex = startIndex + centerIndex;
+            //console.log('开始索引:'+startIndex+'中止索引:' + endIndex+ '操作数组：' + operatedArray + '中心索引:' + realCenterIndex);
+            for (var i = startIndex; i < realCenterIndex; i++) {
+                code[i] += '0';
+            }
+            loop(code, p, startIndex, realCenterIndex - 1);
+            for (i = realCenterIndex; i <= endIndex; i++) {
+                code[i] += '1';
+            }
+            loop(code, p, realCenterIndex, endIndex);
+        } else {
+            //不可分
+            //console.log('不可分，操作数组:' + operatedArray + '当前索引:' + startIndex);
         }
     };
 
     this.Analyze = function () {
-        if (P.length >= 2) {
-            Code[0] = '00';
-            Code[1] = '01';
-        } else if (P.length == 1) {
-            Code[0] = '00';
-        } else {
-            return;
+        for (var i = 0; i < P.length; i++) {
+            Code[i] = '';
         }
 
-        loop(Code, P, 2);
+        loop(Code, P, 0, P.length - 1);
 
         var tmp = [];
-        for(var i =0;i< P.length;i++){
+        for (i = 0; i < P.length; i++) {
             tmp.push({
-                sign: 'a' +(i+1),
-                p:P[i],
-                code:Code[i]
+                sign: 'a' + (i + 1),
+                p: P[i],
+                code: Code[i]
             });
         }
         return tmp;
     };
 
     //获取平均码长
-    this.getAverageCodeLength = function(){
+    this.getAverageCodeLength = function () {
         var codeLength = 0;
-        for(var i = 0;i< P.length;i++){
+        for (var i = 0; i < P.length; i++) {
             codeLength += P[i] * Code[i].length
         }
         return codeLength;
     };
 
-    this.getCodingEfficiency = function(){
+    this.getCodingEfficiency = function () {
         var h = Common.computeEntropy(P);
         return Number(h / this.getAverageCodeLength()).toFixed(4);
     }

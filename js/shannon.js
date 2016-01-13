@@ -20,7 +20,6 @@ var Shannon = function (_source) {
 
         //step 3
         for (i = 1; i < Pa.length; i++) {
-            //Ki[i] = Math.floor(-Math.log(P[i]) / Math.log(2));
             var tmp = -(Math.log(P[i]) / Math.log(2));
             if (parseInt(tmp) == tmp) {
                 //是整数
